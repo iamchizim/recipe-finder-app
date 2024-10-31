@@ -1,10 +1,10 @@
-import re
-import './App.css';
+import "./App.css";
+import RecipeFinderApp from "./components/RecipeFinderApp.js";
 
 function App() {
   return (
-    <div >
-      <RecipeFinderApp/>
+    <div>
+      <RecipeFinderApp />
     </div>
   );
 }

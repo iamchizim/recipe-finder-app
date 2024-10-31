@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useState, useContext } from "react";
+import { useState } from "react";
 import RecipeForm from "./RecipeForm";
 import RecipeList from "./RecipeList";
 import Pagination from "./Pagination";
@@ -12,20 +12,27 @@ const RecipeFinderApp = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [recipesPerPage] = useState(10);
+  const recipesPerPage = 10; // Set the number of recipes to display per page
+
+  const formatRecipeDescription = (description) => {
+    return description.replace(/<\/?[^>]+(>|$)/g, "");
+  };
 
   const fetchRecipe = async (query) => {
+    const apiKey = "ff70a64e77bf4aaaa14b477a98e979ab";
+    const number = 100; // Fetch up to 100 recipes
     try {
       setLoading(true);
       setErrorMessage(null);
       const response = await fetch(
-        `https://api.spoonacular.com/recipes/complexSearch?query=${query}&apiKey=${ff70a64e77bf4aaaa14b477a98e979ab}`
+        `https://api.spoonacular.com/recipes/complexSearch?query=${query}&addRecipeInformation=true&apiKey=${apiKey}&number=${number}`
       );
+      console.log("Response:", response);
       if (!response.ok) {
         throw new Error("Recipe not found");
       }
       const data = await response.json();
-      setRecipes(data.results);
+      setRecipes(data.results); // Set all recipes at once
     } catch (error) {
       setErrorMessage(error.message);
       setRecipes([]);
@@ -34,34 +41,38 @@ const RecipeFinderApp = () => {
     }
   };
 
-  useEffect(
-    (query) => {
-      if (query) {
-        fetchRecipe(query);
-      }
-    },
-    [query]
-  );
+  useEffect(() => {
+    if (query) {
+      setCurrentPage(1); // Reset to the first page when the query changes
+      fetchRecipe(query); // Fetch all recipes based on the new query
+    }
+  }, [query]);
 
-  const indexOfLastPost = currentPage * recipesPerPage;
-  const indexOfFirstPost = indexOfLastPost - recipesPerPage;
-  const currentPosts = recipes.slice(indexOfFirstPost, indexOfLastPost);
+  const indexOfLastRecipe = currentPage * recipesPerPage;
+  const indexOfFirstRecipe = indexOfLastRecipe - recipesPerPage;
+  const currentRecipes = recipes.slice(indexOfFirstRecipe, indexOfLastRecipe); // Slice the recipes for the current page
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <section>
       <RecipeForm setQuery={setQuery} />
       {loading && <LoadingMessage />}
-      {errorMessage && <ErrorMessage />}
-      <RecipeList recipes={currentPosts} />
+      {errorMessage && <ErrorMessage message={errorMessage} />}
+      <RecipeList
+        formatRecipeDescription={formatRecipeDescription}
+        recipes={currentRecipes}
+      />
       <Pagination
-        totalRecipes={recipes.length}
+        totalRecipes={recipes.length} // Use the total number of recipes fetched
         recipesPerPage={recipesPerPage}
         paginate={paginate}
+        currentPage={currentPage}
       />
     </section>
   );
 };
 
-export default RecipeFinderApp;
+export default RecipeFinderApp

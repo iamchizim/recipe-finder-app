@@ -3,7 +3,6 @@ import { useState } from "react";
 import RecipeForm from "./RecipeForm";
 import RecipeList from "./RecipeList";
 import Pagination from "./Pagination";
-import LoadingMessage from "./LoadingMessage";
 import ErrorMessage from "./ErrorMessage";
 
 const RecipeFinderApp = () => {
@@ -57,22 +56,20 @@ const RecipeFinderApp = () => {
   };
 
   return (
-    <section>
+    <section className="container">
       <RecipeForm setQuery={setQuery} />
-      {loading && <LoadingMessage />}
+      {loading && <div className="spinner"></div>}
       {errorMessage && <ErrorMessage message={errorMessage} />}
-      <RecipeList
-        formatRecipeDescription={formatRecipeDescription}
-        recipes={currentRecipes}
-      />
+      <RecipeList recipes={currentRecipes}   formatRecipeDescription={formatRecipeDescription}/>
       <Pagination
         totalRecipes={recipes.length} // Use the total number of recipes fetched
         recipesPerPage={recipesPerPage}
         paginate={paginate}
         currentPage={currentPage}
       />
+     
     </section>
   );
 };
 
-export default RecipeFinderApp
+export default RecipeFinderApp;

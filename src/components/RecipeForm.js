@@ -15,6 +15,7 @@ const RecipeForm = ({ setQuery }) => {
   return (
     <section>
       <form onSubmit={handleSubmit}>
+        <h1>Recipe Finder </h1>
         <input
           type="text"
           onChange={(event) => setInputValue(event.target.value)}
